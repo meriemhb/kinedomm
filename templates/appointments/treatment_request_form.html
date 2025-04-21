@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title mb-0">
+                        {% if form.instance.pk %}
+                        Modifier la demande de traitement
+                        {% else %}
+                        Nouvelle demande de traitement
+                        {% endif %}
+                    </h3>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.kine.id_for_label }}" class="form-label">Kinésithérapeute</label>
+                            {{ form.kine }}
+                            {% if form.kine.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.kine.errors }}
+                            </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="{{ form.date_traitement_souhaite.id_for_label }}" class="form-label">Date souhaitée</label>
+                            {{ form.date_traitement_souhaite }}
+                            {% if form.date_traitement_souhaite.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.date_traitement_souhaite.errors }}
+                            </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="{{ form.description_probleme.id_for_label }}" class="form-label">Description du problème</label>
+                            {{ form.description_probleme }}
+                            {% if form.description_probleme.errors %}
+                            <div class="invalid-feedback d-block">
+                                {{ form.description_probleme.errors }}
+                            </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="d-flex justify-content-between">
+                            <a href="{% url 'treatment_request_list' %}" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left"></i> Retour
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="fas fa-save"></i> Enregistrer
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+{% block extra_js %}
+<script>
+    // Initialisation des champs de date
+    $(document).ready(function() {
+        $('.datepicker').datepicker({
+            format: 'dd/mm/yyyy',
+            autoclose: true,
+            todayHighlight: true,
+            startDate: '0d'
+        });
+    });
+</script>
+{% endblock %}
+{% endblock %} 

@@ -3,8 +3,9 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from users.models import Utilisateur
 from django.contrib import messages
 from django.utils import timezone
-from .models import Appointment, Availability
-from .forms import AppointmentForm, AvailabilityForm
+from .models import Appointment, Availability, Conseil, TreatmentRequest
+from .forms import AppointmentForm, AvailabilityForm, ConseilForm, TreatmentRequestForm, TreatmentResponseForm
+from django.db import models
 
 def is_admin(user):
     return user.is_staff
@@ -229,3 +230,190 @@ def statistics(request):
     }
     
     return render(request, 'appointments/statistics.html', context)
+
+@login_required
+def invite_patient(request):
+    if request.user.role != 'KINE':
+        messages.error(request, "Vous n'avez pas accès à cette page.")
+        return redirect('home')
+    
+    if request.method == 'POST':
+        email = request.POST.get('email')
+        try:
+            patient = Utilisateur.objects.get(email=email, role='PATIENT')
+            # Créer une relation entre le kiné et le patient
+            request.user.kine_profile.patients.add(patient)
+            messages.success(request, f"Le patient {patient.get_full_name()} a été ajouté à votre liste.")
+        except Utilisateur.DoesNotExist:
+            messages.error(request, "Aucun patient trouvé avec cet email.")
+    
+    return render(request, 'appointments/invite_patient.html')
+
+@login_required
+def conseil_list(request):
+    if request.user.role == 'KINE':
+        conseils = Conseil.objects.filter(kine=request.user)
+    else:
+        conseils = Conseil.objects.filter(
+            models.Q(patients=request.user) | models.Q(est_public=True)
+        ).distinct()
+    
+    return render(request, 'appointments/conseil_list.html', {'conseils': conseils})
+
+@login_required
+def conseil_create(request):
+    if request.user.role != 'KINE':
+        messages.error(request, "Vous n'avez pas accès à cette page.")
+        return redirect('home')
+    
+    if request.method == 'POST':
+        form = ConseilForm(request.POST, request.FILES)
+        if form.is_valid():
+            conseil = form.save(commit=False)
+            conseil.kine = request.user
+            conseil.save()
+            form.save_m2m()  # Pour sauvegarder les relations many-to-many
+            messages.success(request, "Le conseil a été créé avec succès.")
+            return redirect('appointments:conseil_list')
+    else:
+        form = ConseilForm()
+    
+    return render(request, 'appointments/conseil_form.html', {'form': form})
+
+@login_required
+def conseil_detail(request, pk):
+    conseil = get_object_or_404(Conseil, pk=pk)
+    if request.user != conseil.kine and request.user not in conseil.patients.all() and not conseil.est_public:
+        messages.error(request, "Vous n'avez pas accès à ce conseil.")
+        return redirect('appointments:conseil_list')
+    
+    return render(request, 'appointments/conseil_detail.html', {'conseil': conseil})
+
+@login_required
+def conseil_update(request, pk):
+    conseil = get_object_or_404(Conseil, pk=pk)
+    if request.user != conseil.kine:
+        messages.error(request, "Vous n'avez pas la permission de modifier ce conseil.")
+        return redirect('appointments:conseil_list')
+    
+    if request.method == 'POST':
+        form = ConseilForm(request.POST, instance=conseil)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Conseil mis à jour avec succès.')
+            return redirect('appointments:conseil_detail', pk=conseil.pk)
+    else:
+        form = ConseilForm(instance=conseil)
+    
+    return render(request, 'appointments/conseil_form.html', {'form': form})
+
+@login_required
+def conseil_delete(request, pk):
+    conseil = get_object_or_404(Conseil, pk=pk)
+    if request.user != conseil.kine:
+        messages.error(request, "Vous n'avez pas la permission de supprimer ce conseil.")
+        return redirect('appointments:conseil_list')
+    
+    if request.method == 'POST':
+        conseil.delete()
+        messages.success(request, 'Conseil supprimé avec succès.')
+        return redirect('appointments:conseil_list')
+    
+    return render(request, 'appointments/conseil_confirm_delete.html', {'conseil': conseil})
+
+@login_required
+def treatment_request_create(request):
+    if request.user.role != 'PATIENT':
+        messages.error(request, "Vous n'avez pas accès à cette page.")
+        return redirect('home')
+    
+    if request.method == 'POST':
+        form = TreatmentRequestForm(request.POST)
+        if form.is_valid():
+            treatment_request = form.save(commit=False)
+            treatment_request.patient = request.user
+            treatment_request.save()
+            messages.success(request, "Votre demande a été envoyée avec succès.")
+            return redirect('appointments:treatment_requests')
+    else:
+        form = TreatmentRequestForm()
+    
+    return render(request, 'appointments/treatment_request_form.html', {'form': form})
+
+@login_required
+def treatment_requests_list(request):
+    if request.user.role == 'KINE':
+        requests = TreatmentRequest.objects.filter(kine=request.user)
+    else:
+        requests = TreatmentRequest.objects.filter(patient=request.user)
+    
+    return render(request, 'appointments/treatment_requests_list.html', {'requests': requests})
+
+@login_required
+def treatment_request_detail(request, pk):
+    request_obj = get_object_or_404(TreatmentRequest, pk=pk)
+    if request.user not in [request_obj.patient, request_obj.kine]:
+        messages.error(request, "Vous n'avez pas accès à cette demande.")
+        return redirect('home')
+    
+    if request.user.role == 'KINE' and request_obj.statut == 'EN_ATTENTE':
+        if request.method == 'POST':
+            form = TreatmentResponseForm(request.POST, instance=request_obj)
+            if form.is_valid():
+                treatment_request = form.save(commit=False)
+                treatment_request.date_reponse = timezone.now()
+                treatment_request.save()
+                messages.success(request, "Votre réponse a été enregistrée.")
+                return redirect('appointments:treatment_requests')
+        else:
+            form = TreatmentResponseForm(instance=request_obj)
+    else:
+        form = None
+    
+    return render(request, 'appointments/treatment_request_detail.html', {
+        'request_obj': request_obj,
+        'form': form
+    })
+
+@login_required
+def treatment_invitations(request):
+    if request.user.role != 'KINE':
+        messages.error(request, "Vous n'avez pas accès à cette page.")
+        return redirect('home')
+    
+    invitations = TreatmentRequest.objects.filter(
+        kine=request.user,
+        statut='EN_ATTENTE'
+    ).order_by('-date_demande')
+    
+    return render(request, 'appointments/treatment_invitations.html', {
+        'invitations': invitations
+    })
+
+@login_required
+def respond_to_invitation(request, pk):
+    if request.user.role != 'KINE':
+        messages.error(request, "Vous n'avez pas accès à cette page.")
+        return redirect('home')
+    
+    invitation = get_object_or_404(TreatmentRequest, pk=pk, kine=request.user)
+    
+    if request.method == 'POST':
+        action = request.POST.get('action')
+        reponse = request.POST.get('reponse', '')
+        
+        if action == 'accept':
+            invitation.statut = 'ACCEPTE'
+        elif action == 'refuse':
+            invitation.statut = 'REFUSE'
+        
+        invitation.reponse = reponse
+        invitation.date_reponse = timezone.now()
+        invitation.save()
+        
+        messages.success(request, f"La demande a été {'acceptée' if action == 'accept' else 'refusée'} avec succès.")
+        return redirect('appointments:treatment_invitations')
+    
+    return render(request, 'appointments/respond_to_invitation.html', {
+        'invitation': invitation
+    })

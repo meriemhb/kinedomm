@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>Demander un traitement</h2>
+    <div class="card">
+        <div class="card-body">
+            <form method="post">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <label for="id_kine" class="form-label">Kinésithérapeute</label>
+                    {{ form.kine }}
+                </div>
+                <div class="mb-3">
+                    <label for="id_description" class="form-label">Description de votre problème</label>
+                    {{ form.description }}
+                </div>
+                <div class="mb-3">
+                    <label for="id_date_traitement_souhaite" class="form-label">Date souhaitée pour le traitement</label>
+                    {{ form.date_traitement_souhaite }}
+                </div>
+                <button type="submit" class="btn btn-primary">Envoyer la demande</button>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %} 

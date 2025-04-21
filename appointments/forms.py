@@ -1,5 +1,5 @@
 from django import forms
-from .models import Appointment, Availability
+from .models import Appointment, Availability, Conseil, TreatmentRequest
 from users.models import Utilisateur
 from django.utils import timezone
 
@@ -46,3 +46,39 @@ class AvailabilityForm(forms.ModelForm):
                 raise forms.ValidationError("L'heure de fin doit être après l'heure de début.")
         
         return cleaned_data 
+
+class ConseilForm(forms.ModelForm):
+    class Meta:
+        model = Conseil
+        fields = ['titre', 'type_contenu', 'contenu', 'media', 'patients', 'est_public']
+        widgets = {
+            'contenu': forms.Textarea(attrs={'rows': 4}),
+            'patients': forms.CheckboxSelectMultiple(),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['patients'].queryset = Utilisateur.objects.filter(role='PATIENT')
+        self.fields['patients'].required = False 
+
+class TreatmentRequestForm(forms.ModelForm):
+    class Meta:
+        model = TreatmentRequest
+        fields = ['kine', 'description', 'date_traitement_souhaite']
+        widgets = {
+            'date_traitement_souhaite': forms.DateInput(attrs={'type': 'date'}),
+            'description': forms.Textarea(attrs={'rows': 4}),
+        }
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.fields['kine'].queryset = Utilisateur.objects.filter(role='KINE')
+        self.fields['kine'].label = 'Kinésithérapeute'
+
+class TreatmentResponseForm(forms.ModelForm):
+    class Meta:
+        model = TreatmentRequest
+        fields = ['statut', 'reponse']
+        widgets = {
+            'reponse': forms.Textarea(attrs={'rows': 4}),
+        } 

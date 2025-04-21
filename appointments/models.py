@@ -66,3 +66,51 @@ class Availability(models.Model):
                 minute=minutes % 60
             )
         return creneaux
+
+class Conseil(models.Model):
+    TYPE_CHOICES = [
+        ('CONSEIL', 'Conseil'),
+        ('VIDEO', 'Vidéo'),
+        ('IMAGE', 'Image'),
+    ]
+
+    kine = models.ForeignKey(Utilisateur, on_delete=models.CASCADE, related_name='conseils')
+    titre = models.CharField(max_length=200)
+    type_contenu = models.CharField(max_length=10, choices=TYPE_CHOICES)
+    contenu = models.TextField()
+    media = models.FileField(upload_to='conseils/', blank=True, null=True)
+    date_creation = models.DateTimeField(auto_now_add=True)
+    patients = models.ManyToManyField(Utilisateur, related_name='conseils_recus', blank=True)
+    est_public = models.BooleanField(default=False)
+
+    class Meta:
+        verbose_name = "Conseil"
+        verbose_name_plural = "Conseils"
+        ordering = ['-date_creation']
+
+    def __str__(self):
+        return f"{self.titre} - {self.kine.get_full_name()}"
+
+class TreatmentRequest(models.Model):
+    STATUT_CHOICES = [
+        ('EN_ATTENTE', 'En attente'),
+        ('ACCEPTE', 'Accepté'),
+        ('REFUSE', 'Refusé'),
+    ]
+
+    patient = models.ForeignKey(Utilisateur, on_delete=models.CASCADE, related_name='treatment_requests')
+    kine = models.ForeignKey(Utilisateur, on_delete=models.CASCADE, related_name='received_requests')
+    description = models.TextField()
+    date_demande = models.DateTimeField(auto_now_add=True)
+    date_traitement_souhaite = models.DateField()
+    statut = models.CharField(max_length=20, choices=STATUT_CHOICES, default='EN_ATTENTE')
+    reponse = models.TextField(blank=True)
+    date_reponse = models.DateTimeField(null=True, blank=True)
+
+    class Meta:
+        verbose_name = "Demande de traitement"
+        verbose_name_plural = "Demandes de traitement"
+        ordering = ['-date_demande']
+
+    def __str__(self):
+        return f"Demande de {self.patient.get_full_name()} à {self.kine.get_full_name()}"

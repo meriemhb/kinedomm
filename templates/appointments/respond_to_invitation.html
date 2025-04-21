@@ -1,0 +1,49 @@
+{% extends 'base.html' %}
+
+{% block title %}Répondre à l'invitation{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="card">
+                <div class="card-header">
+                    <h2 class="mb-0">Répondre à l'invitation</h2>
+                </div>
+                <div class="card-body">
+                    <div class="mb-4">
+                        <h5>Détails de la demande</h5>
+                        <p><strong>Patient :</strong> {{ invitation.patient.get_full_name }}</p>
+                        <p><strong>Date de la demande :</strong> {{ invitation.date_demande|date:"d/m/Y H:i" }}</p>
+                        <p><strong>Date souhaitée :</strong> {{ invitation.date_traitement_souhaite|date:"d/m/Y" }}</p>
+                        <p><strong>Description :</strong></p>
+                        <div class="border p-3 bg-light">
+                            {{ invitation.description|linebreaks }}
+                        </div>
+                    </div>
+
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="reponse" class="form-label">Votre réponse</label>
+                            <textarea class="form-control" id="reponse" name="reponse" rows="4" required></textarea>
+                        </div>
+
+                        <div class="d-flex justify-content-between">
+                            <button type="submit" name="action" value="accept" class="btn btn-success">
+                                <i class="fas fa-check"></i> Accepter
+                            </button>
+                            <button type="submit" name="action" value="refuse" class="btn btn-danger">
+                                <i class="fas fa-times"></i> Refuser
+                            </button>
+                            <a href="{% url 'appointments:treatment_invitations' %}" class="btn btn-secondary">
+                                <i class="fas fa-arrow-left"></i> Retour
+                            </a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 
