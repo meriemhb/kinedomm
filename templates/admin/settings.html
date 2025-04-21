@@ -1,0 +1,143 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Paramètres - Kiné à Domicile{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar -->
+        <div class="col-md-3 col-lg-2 d-md-block bg-light sidebar">
+            <div class="position-sticky pt-3">
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'admin_dashboard' %}">
+                            <i class="fas fa-tachometer-alt"></i> Tableau de bord
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'admin_users' %}">
+                            <i class="fas fa-users"></i> Gestion des utilisateurs
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'admin_appointments' %}">
+                            <i class="fas fa-calendar-alt"></i> Gestion des rendez-vous
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'admin_reports' %}">
+                            <i class="fas fa-chart-bar"></i> Rapports et statistiques
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="{% url 'admin_settings' %}">
+                            <i class="fas fa-cog"></i> Paramètres
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Main content -->
+        <div class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                <h1 class="h2">Paramètres</h1>
+            </div>
+
+            <!-- Paramètres généraux -->
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Paramètres généraux</h6>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="site_name" class="form-label">Nom du site</label>
+                                <input type="text" class="form-control" id="site_name" name="site_name" value="{{ settings.site_name }}">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="contact_email" class="form-label">Email de contact</label>
+                                <input type="email" class="form-control" id="contact_email" name="contact_email" value="{{ settings.contact_email }}">
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6 mb-3">
+                                <label for="phone_number" class="form-label">Numéro de téléphone</label>
+                                <input type="tel" class="form-control" id="phone_number" name="phone_number" value="{{ settings.phone_number }}">
+                            </div>
+                            <div class="col-md-6 mb-3">
+                                <label for="address" class="form-label">Adresse</label>
+                                <input type="text" class="form-control" id="address" name="address" value="{{ settings.address }}">
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Enregistrer les modifications</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Paramètres de notification -->
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Paramètres de notification</h6>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="email_notifications" name="email_notifications" {% if settings.email_notifications %}checked{% endif %}>
+                                <label class="form-check-label" for="email_notifications">Activer les notifications par email</label>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="sms_notifications" name="sms_notifications" {% if settings.sms_notifications %}checked{% endif %}>
+                                <label class="form-check-label" for="sms_notifications">Activer les notifications par SMS</label>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="appointment_reminders" name="appointment_reminders" {% if settings.appointment_reminders %}checked{% endif %}>
+                                <label class="form-check-label" for="appointment_reminders">Activer les rappels de rendez-vous</label>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Enregistrer les modifications</button>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Paramètres de sécurité -->
+            <div class="card shadow mb-4">
+                <div class="card-header py-3">
+                    <h6 class="m-0 font-weight-bold text-primary">Paramètres de sécurité</h6>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="mb-3">
+                            <label for="session_timeout" class="form-label">Délai d'expiration de la session (minutes)</label>
+                            <input type="number" class="form-control" id="session_timeout" name="session_timeout" value="{{ settings.session_timeout }}" min="5" max="1440">
+                        </div>
+                        <div class="mb-3">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="two_factor_auth" name="two_factor_auth" {% if settings.two_factor_auth %}checked{% endif %}>
+                                <label class="form-check-label" for="two_factor_auth">Activer l'authentification à deux facteurs</label>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <div class="form-check form-switch">
+                                <input class="form-check-input" type="checkbox" id="password_policy" name="password_policy" {% if settings.password_policy %}checked{% endif %}>
+                                <label class="form-check-label" for="password_policy">Activer la politique de mot de passe stricte</label>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Enregistrer les modifications</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

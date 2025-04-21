@@ -1,0 +1,127 @@
+{% extends 'base.html' %}
+
+{% block title %}Accueil - Kiné à Domicile{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row">
+        <div class="col-md-8 offset-md-2 text-center">
+            <h1 class="display-4 mb-4">Bienvenue sur Kiné à Domicile</h1>
+            <p class="lead mb-4">
+                Votre plateforme de gestion de rendez-vous de kinésithérapie à domicile
+            </p>
+        </div>
+    </div>
+
+    <div class="row mt-5">
+        {% if user.is_authenticated %}
+            {% if user.role == 'PATIENT' %}
+            <div class="col-md-4">
+                <div class="card h-100">
+                    <div class="card-body text-center">
+                        <i class="fas fa-calendar-plus fa-3x mb-3 text-primary"></i>
+                        <h3 class="card-title">Prendre un rendez-vous</h3>
+                        <p class="card-text">
+                            Réservez facilement votre séance de kinésithérapie à domicile.
+                        </p>
+                        <a href="{% url 'appointments:create' %}" class="btn btn-primary">
+                            Nouveau rendez-vous
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card h-100">
+                    <div class="card-body text-center">
+                        <i class="fas fa-list fa-3x mb-3 text-success"></i>
+                        <h3 class="card-title">Mes rendez-vous</h3>
+                        <p class="card-text">
+                            Consultez et gérez vos rendez-vous programmés.
+                        </p>
+                        <a href="{% url 'appointments:list' %}" class="btn btn-success">
+                            Voir mes rendez-vous
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card h-100">
+                    <div class="card-body text-center">
+                        <i class="fas fa-user fa-3x mb-3 text-info"></i>
+                        <h3 class="card-title">Mon profil</h3>
+                        <p class="card-text">
+                            Gérez vos informations personnelles et vos préférences.
+                        </p>
+                        <a href="{% url 'users:profile' %}" class="btn btn-info">
+                            Voir mon profil
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% elif user.role == 'KINE' %}
+            <div class="col-md-4">
+                <div class="card h-100">
+                    <div class="card-body text-center">
+                        <i class="fas fa-calendar-check fa-3x mb-3 text-primary"></i>
+                        <h3 class="card-title">Mes rendez-vous</h3>
+                        <p class="card-text">
+                            Consultez et gérez vos rendez-vous avec les patients.
+                        </p>
+                        <a href="{% url 'appointments:kine_list' %}" class="btn btn-primary">
+                            Voir mes rendez-vous
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card h-100">
+                    <div class="card-body text-center">
+                        <i class="fas fa-users fa-3x mb-3 text-success"></i>
+                        <h3 class="card-title">Mes patients</h3>
+                        <p class="card-text">
+                            Consultez la liste de vos patients et leurs informations.
+                        </p>
+                        <a href="#" class="btn btn-success">
+                            Voir mes patients
+                        </a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4">
+                <div class="card h-100">
+                    <div class="card-body text-center">
+                        <i class="fas fa-user-md fa-3x mb-3 text-info"></i>
+                        <h3 class="card-title">Mon profil</h3>
+                        <p class="card-text">
+                            Gérez vos informations professionnelles et vos disponibilités.
+                        </p>
+                        <a href="{% url 'users:profile' %}" class="btn btn-info">
+                            Voir mon profil
+                        </a>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+        {% else %}
+            <div class="col-md-6 offset-md-3">
+                <div class="card">
+                    <div class="card-body text-center">
+                        <h3 class="card-title mb-4">Bienvenue sur notre plateforme</h3>
+                        <p class="card-text mb-4">
+                            Pour accéder à toutes les fonctionnalités, veuillez vous connecter ou créer un compte.
+                        </p>
+                        <div class="d-grid gap-2">
+                            <a href="{% url 'login' %}" class="btn btn-primary">
+                                <i class="fas fa-sign-in-alt"></i> Se connecter
+                            </a>
+                            <a href="{% url 'users:register' %}" class="btn btn-success">
+                                <i class="fas fa-user-plus"></i> Créer un compte
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %} 

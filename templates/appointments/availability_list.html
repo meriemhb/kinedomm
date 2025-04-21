@@ -1,0 +1,51 @@
+{% extends 'base.html' %}
+
+{% block title %}Mes Disponibilités{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>Mes Disponibilités</h1>
+        <a href="{% url 'appointments:availability_create' %}" class="btn btn-primary">
+            <i class="fas fa-plus"></i> Ajouter une disponibilité
+        </a>
+    </div>
+
+    {% if availabilities %}
+    <div class="table-responsive">
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Heure de début</th>
+                    <th>Heure de fin</th>
+                    <th>Durée RDV</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for availability in availabilities %}
+                <tr>
+                    <td>{{ availability.jour|date:"d/m/Y" }}</td>
+                    <td>{{ availability.heure_debut|time:"H:i" }}</td>
+                    <td>{{ availability.heure_fin|time:"H:i" }}</td>
+                    <td>{{ availability.duree_rdv }} minutes</td>
+                    <td>
+                        <a href="{% url 'appointments:availability_delete' availability.pk %}" 
+                           class="btn btn-sm btn-danger"
+                           onclick="return confirm('Êtes-vous sûr de vouloir supprimer cette disponibilité ?')">
+                            <i class="fas fa-trash"></i>
+                        </a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="alert alert-info">
+        Vous n'avez pas encore défini de disponibilités.
+    </div>
+    {% endif %}
+</div>
+{% endblock %} 

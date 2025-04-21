@@ -1,0 +1,80 @@
+{% extends 'base.html' %}
+
+{% block title %}Statistiques{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h1 class="mb-4">Statistiques</h1>
+    
+    <div class="row">
+        <!-- Statistiques des rendez-vous -->
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Statistiques des rendez-vous</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="stat-card">
+                                <h6>Total des rendez-vous</h6>
+                                <p class="stat-number">{{ total_appointments }}</p>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="stat-card">
+                                <h6>Rendez-vous confirmés</h6>
+                                <p class="stat-number">{{ confirmed_appointments }}</p>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="stat-card">
+                                <h6>Rendez-vous annulés</h6>
+                                <p class="stat-number">{{ cancelled_appointments }}</p>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="stat-card">
+                                <h6>Rendez-vous terminés</h6>
+                                <p class="stat-number">{{ completed_appointments }}</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Statistiques des patients -->
+        <div class="col-md-6">
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">Statistiques des patients</h5>
+                </div>
+                <div class="card-body">
+                    <div class="stat-card">
+                        <h6>Nombre total de patients</h6>
+                        <p class="stat-number">{{ total_patients }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.stat-card {
+    text-align: center;
+    padding: 20px;
+    border-radius: 8px;
+    background-color: #f8f9fa;
+    margin-bottom: 20px;
+}
+
+.stat-number {
+    font-size: 2.5rem;
+    font-weight: bold;
+    color: #007bff;
+    margin: 10px 0;
+}
+</style>
+{% endblock %} 

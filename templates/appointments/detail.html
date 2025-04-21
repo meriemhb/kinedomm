@@ -1,0 +1,77 @@
+{% extends 'base.html' %}
+
+{% block title %}Détails du Rendez-vous{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header d-flex justify-content-between align-items-center">
+                    <h2 class="mb-0">Détails du Rendez-vous</h2>
+                    <span class="badge {% if appointment.statut == 'PLANIFIE' %}bg-warning
+                                     {% elif appointment.statut == 'CONFIRME' %}bg-success
+                                     {% elif appointment.statut == 'ANNULE' %}bg-danger
+                                     {% else %}bg-info{% endif %}">
+                        {{ appointment.get_statut_display }}
+                    </span>
+                </div>
+                <div class="card-body">
+                    <div class="row mb-4">
+                        <div class="col-md-6">
+                            <h5>Informations du rendez-vous</h5>
+                            <dl class="row">
+                                <dt class="col-sm-4">Date</dt>
+                                <dd class="col-sm-8">{{ appointment.date|date:"d/m/Y" }}</dd>
+
+                                <dt class="col-sm-4">Heure</dt>
+                                <dd class="col-sm-8">{{ appointment.heure|time:"H:i" }}</dd>
+
+                                <dt class="col-sm-4">Créé le</dt>
+                                <dd class="col-sm-8">{{ appointment.cree_le|date:"d/m/Y H:i" }}</dd>
+
+                                <dt class="col-sm-4">Modifié le</dt>
+                                <dd class="col-sm-8">{{ appointment.modifie_le|date:"d/m/Y H:i" }}</dd>
+                            </dl>
+                        </div>
+                        <div class="col-md-6">
+                            <h5>Personnes concernées</h5>
+                            <dl class="row">
+                                <dt class="col-sm-4">Patient</dt>
+                                <dd class="col-sm-8">{{ appointment.patient.utilisateur.get_full_name }}</dd>
+
+                                <dt class="col-sm-4">Kinésithérapeute</dt>
+                                <dd class="col-sm-8">{{ appointment.kine.utilisateur.get_full_name }}</dd>
+                            </dl>
+                        </div>
+                    </div>
+
+                    <div class="mb-4">
+                        <h5>Motif de la consultation</h5>
+                        <p>{{ appointment.motif|linebreaks }}</p>
+                    </div>
+
+                    {% if appointment.notes %}
+                    <div class="mb-4">
+                        <h5>Notes supplémentaires</h5>
+                        <p>{{ appointment.notes|linebreaks }}</p>
+                    </div>
+                    {% endif %}
+
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <a href="{% url 'appointments:list' %}" class="btn btn-secondary me-md-2">Retour à la liste</a>
+                        {% if appointment.statut == 'PLANIFIE' %}
+                        <a href="{% url 'appointments:update' appointment.pk %}" class="btn btn-warning me-md-2">
+                            <i class="fas fa-edit"></i> Modifier
+                        </a>
+                        <a href="{% url 'appointments:delete' appointment.pk %}" class="btn btn-danger">
+                            <i class="fas fa-trash"></i> Supprimer
+                        </a>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

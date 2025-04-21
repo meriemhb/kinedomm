@@ -1,0 +1,67 @@
+{% extends 'base.html' %}
+
+{% block title %}Ajouter une disponibilité{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Ajouter une disponibilité</h3>
+                </div>
+                <div class="card-body">
+                    <form method="post">
+                        {% csrf_token %}
+                        
+                        <div class="mb-3">
+                            <label for="{{ form.jour.id_for_label }}" class="form-label">Date</label>
+                            {{ form.jour }}
+                            {% if form.jour.errors %}
+                                <div class="alert alert-danger">
+                                    {{ form.jour.errors }}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="{{ form.heure_debut.id_for_label }}" class="form-label">Heure de début</label>
+                            {{ form.heure_debut }}
+                            {% if form.heure_debut.errors %}
+                                <div class="alert alert-danger">
+                                    {{ form.heure_debut.errors }}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="{{ form.heure_fin.id_for_label }}" class="form-label">Heure de fin</label>
+                            {{ form.heure_fin }}
+                            {% if form.heure_fin.errors %}
+                                <div class="alert alert-danger">
+                                    {{ form.heure_fin.errors }}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="mb-3">
+                            <label for="{{ form.duree_rdv.id_for_label }}" class="form-label">Durée d'un rendez-vous (minutes)</label>
+                            {{ form.duree_rdv }}
+                            {% if form.duree_rdv.errors %}
+                                <div class="alert alert-danger">
+                                    {{ form.duree_rdv.errors }}
+                                </div>
+                            {% endif %}
+                        </div>
+
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-primary">Ajouter</button>
+                            <a href="{% url 'appointments:availability_list' %}" class="btn btn-secondary">Annuler</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

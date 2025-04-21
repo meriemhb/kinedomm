@@ -1,0 +1,68 @@
+{% extends 'base.html' %}
+
+{% block title %}Mon Profil - Kiné à Domicile{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-md-8 offset-md-2">
+        <div class="card">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h2>Mon Profil</h2>
+                <a href="{% url 'users:edit_profile' %}" class="btn btn-primary">
+                    <i class="fas fa-edit"></i> Modifier
+                </a>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-6">
+                        <h4>Informations Personnelles</h4>
+                        <dl class="row">
+                            <dt class="col-sm-4">Nom d'utilisateur</dt>
+                            <dd class="col-sm-8">{{ user.username }}</dd>
+
+                            <dt class="col-sm-4">Email</dt>
+                            <dd class="col-sm-8">{{ user.email }}</dd>
+
+                            <dt class="col-sm-4">Prénom</dt>
+                            <dd class="col-sm-8">{{ user.first_name }}</dd>
+
+                            <dt class="col-sm-4">Nom</dt>
+                            <dd class="col-sm-8">{{ user.last_name }}</dd>
+
+                            <dt class="col-sm-4">Rôle</dt>
+                            <dd class="col-sm-8">{{ user.get_role_display }}</dd>
+
+                            <dt class="col-sm-4">Date de naissance</dt>
+                            <dd class="col-sm-8">{{ user.date_naissance|date:"d/m/Y" }}</dd>
+
+                            <dt class="col-sm-4">Téléphone</dt>
+                            <dd class="col-sm-8">{{ user.telephone }}</dd>
+                        </dl>
+                    </div>
+                    <div class="col-md-6">
+                        <h4>Informations Spécifiques</h4>
+                        {% if user.role == 'PATIENT' and profile %}
+                            <dl class="row">
+                                <dt class="col-sm-4">Numéro de sécurité sociale</dt>
+                                <dd class="col-sm-8">{{ profile.numero_securite_sociale }}</dd>
+                            </dl>
+                        {% elif user.role == 'KINE' and profile %}
+                            <dl class="row">
+                                <dt class="col-sm-4">Numéro ADELI</dt>
+                                <dd class="col-sm-8">{{ profile.numero_adeli }}</dd>
+                                <dt class="col-sm-4">Spécialités</dt>
+                                <dd class="col-sm-8">{{ profile.specialites }}</dd>
+                            </dl>
+                        {% elif user.role == 'VENDEUR' and profile %}
+                            <dl class="row">
+                                <dt class="col-sm-4">Entreprise</dt>
+                                <dd class="col-sm-8">{{ profile.entreprise }}</dd>
+                            </dl>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

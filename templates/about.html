@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+
+{% block title %}À propos - Kiné à Domicile{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-body">
+                    <h1 class="card-title text-center mb-4">À propos de Kiné à Domicile</h1>
+                    
+                    <div class="text-center mb-4">
+                        <i class="fas fa-heartbeat fa-3x text-primary mb-3"></i>
+                    </div>
+                    
+                    <h2 class="h4 mb-3">Notre Mission</h2>
+                    <p class="mb-4">
+                        Kiné à Domicile est une plateforme innovante qui facilite la prise de rendez-vous 
+                        avec des kinésithérapeutes à domicile. Notre objectif est de rendre les soins de 
+                        kinésithérapie plus accessibles et plus pratiques pour tous.
+                    </p>
+                    
+                    <h2 class="h4 mb-3">Nos Services</h2>
+                    <ul class="list-unstyled mb-4">
+                        <li class="mb-2">
+                            <i class="fas fa-check-circle text-success me-2"></i>
+                            Prise de rendez-vous en ligne simple et rapide
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-check-circle text-success me-2"></i>
+                            Gestion des disponibilités des kinésithérapeutes
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-check-circle text-success me-2"></i>
+                            Suivi des séances et des progrès
+                        </li>
+                        <li class="mb-2">
+                            <i class="fas fa-check-circle text-success me-2"></i>
+                            Boutique de matériel médical
+                        </li>
+                    </ul>
+                    
+                    <h2 class="h4 mb-3">Notre Équipe</h2>
+                    <p class="mb-4">
+                        Notre équipe est composée de professionnels de la santé et de développeurs 
+                        passionnés qui travaillent ensemble pour améliorer l'expérience des patients 
+                        et des praticiens.
+                    </p>
+                    
+                    <div class="text-center mt-4">
+                        <a href="{% url 'contact' %}" class="btn btn-primary">
+                            <i class="fas fa-envelope me-2"></i>Nous contacter
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

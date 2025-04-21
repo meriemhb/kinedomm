@@ -1,0 +1,32 @@
+{% extends 'base.html' %}
+
+{% block title %}Supprimer une disponibilité{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Supprimer une disponibilité</h3>
+                </div>
+                <div class="card-body">
+                    <p>Êtes-vous sûr de vouloir supprimer cette disponibilité ?</p>
+                    <p>
+                        <strong>Date :</strong> {{ availability.jour|date:"d/m/Y" }}<br>
+                        <strong>Heure :</strong> {{ availability.heure_debut|time:"H:i" }} - {{ availability.heure_fin|time:"H:i" }}
+                    </p>
+                    
+                    <form method="post">
+                        {% csrf_token %}
+                        <div class="d-grid gap-2">
+                            <button type="submit" class="btn btn-danger">Confirmer la suppression</button>
+                            <a href="{% url 'appointments:availability_list' %}" class="btn btn-secondary">Annuler</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

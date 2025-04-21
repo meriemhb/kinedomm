@@ -1,0 +1,142 @@
+{% extends 'base.html' %}
+
+{% block title %}Gestion des Utilisateurs - Kiné à Domicile{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row">
+        <!-- Sidebar -->
+        <div class="col-md-3 col-lg-2 d-md-block bg-light sidebar">
+            <div class="position-sticky pt-3">
+                <ul class="nav flex-column">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'admin_dashboard' %}">
+                            <i class="fas fa-tachometer-alt"></i> Tableau de bord
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="{% url 'admin_users' %}">
+                            <i class="fas fa-users"></i> Gestion des utilisateurs
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'admin_appointments' %}">
+                            <i class="fas fa-calendar-alt"></i> Gestion des rendez-vous
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'admin_reports' %}">
+                            <i class="fas fa-chart-bar"></i> Rapports et statistiques
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{% url 'admin_settings' %}">
+                            <i class="fas fa-cog"></i> Paramètres
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+
+        <!-- Main content -->
+        <div class="col-md-9 ms-sm-auto col-lg-10 px-md-4">
+            <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                <h1 class="h2">Gestion des Utilisateurs</h1>
+                <div class="btn-toolbar mb-2 mb-md-0">
+                    <a href="{% url 'register' %}?type=patient" class="btn btn-sm btn-outline-primary me-2">
+                        <i class="fas fa-user-plus"></i> Nouveau patient
+                    </a>
+                    <a href="{% url 'register' %}?type=kine" class="btn btn-sm btn-outline-success">
+                        <i class="fas fa-user-plus"></i> Nouveau kiné
+                    </a>
+                </div>
+            </div>
+
+            <!-- Filtres -->
+            <div class="row mb-4">
+                <div class="col-md-12">
+                    <div class="card">
+                        <div class="card-body">
+                            <form method="get" class="row g-3">
+                                <div class="col-md-3">
+                                    <label for="role" class="form-label">Rôle</label>
+                                    <select name="role" id="role" class="form-select">
+                                        <option value="">Tous</option>
+                                        <option value="PATIENT">Patient</option>
+                                        <option value="KINE">Kinésithérapeute</option>
+                                        <option value="VENDEUR">Vendeur</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-3">
+                                    <label for="search" class="form-label">Recherche</label>
+                                    <input type="text" name="search" id="search" class="form-control" placeholder="Nom, email...">
+                                </div>
+                                <div class="col-md-3">
+                                    <label class="form-label">&nbsp;</label>
+                                    <button type="submit" class="btn btn-primary w-100">Filtrer</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Liste des utilisateurs -->
+            <div class="card">
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table table-striped">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Nom d'utilisateur</th>
+                                    <th>Email</th>
+                                    <th>Rôle</th>
+                                    <th>Date d'inscription</th>
+                                    <th>Statut</th>
+                                    <th>Actions</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for user in users %}
+                                <tr>
+                                    <td>{{ user.id }}</td>
+                                    <td>{{ user.username }}</td>
+                                    <td>{{ user.email }}</td>
+                                    <td>{{ user.get_role_display }}</td>
+                                    <td>{{ user.date_joined|date:"d/m/Y" }}</td>
+                                    <td>
+                                        {% if user.is_active %}
+                                            <span class="badge bg-success">Actif</span>
+                                        {% else %}
+                                            <span class="badge bg-danger">Inactif</span>
+                                        {% endif %}
+                                    </td>
+                                    <td>
+                                        <a href="{% url 'users:user_profile' user.id %}" class="btn btn-sm btn-info">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                        <a href="{% url 'users:edit_user_profile' user.id %}" class="btn btn-sm btn-warning">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        {% if user.is_active %}
+                                            <a href="#" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#deactivateModal{{ user.id }}">
+                                                <i class="fas fa-user-slash"></i>
+                                            </a>
+                                        {% else %}
+                                            <a href="#" class="btn btn-sm btn-success" data-bs-toggle="modal" data-bs-target="#activateModal{{ user.id }}">
+                                                <i class="fas fa-user-check"></i>
+                                            </a>
+                                        {% endif %}
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %} 

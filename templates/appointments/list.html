@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+
+{% block title %}Mes Rendez-vous{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>Mes Rendez-vous</h1>
+        {% if user.role == 'PATIENT' %}
+        <a href="{% url 'appointments:create' %}" class="btn btn-primary">
+            <i class="fas fa-plus"></i> Nouveau rendez-vous
+        </a>
+        {% endif %}
+    </div>
+
+    {% if appointments %}
+    <div class="table-responsive">
+        <table class="table table-hover">
+            <thead>
+                <tr>
+                    <th>Date</th>
+                    <th>Heure</th>
+                    <th>{% if user.role == 'PATIENT' %}Kinésithérapeute{% else %}Patient{% endif %}</th>
+                    <th>Motif</th>
+                    <th>Statut</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for appointment in appointments %}
+                <tr>
+                    <td>{{ appointment.date|date:"d/m/Y" }}</td>
+                    <td>{{ appointment.heure|time:"H:i" }}</td>
+                    <td>
+                        {% if user.role == 'PATIENT' %}
+                            {{ appointment.kine.utilisateur.get_full_name }}
+                        {% else %}
+                            {{ appointment.patient.utilisateur.get_full_name }}
+                        {% endif %}
+                    </td>
+                    <td>{{ appointment.motif|truncatechars:50 }}</td>
+                    <td>
+                        <span class="badge {% if appointment.statut == 'PLANIFIE' %}bg-warning
+                                         {% elif appointment.statut == 'CONFIRME' %}bg-success
+                                         {% elif appointment.statut == 'ANNULE' %}bg-danger
+                                         {% else %}bg-info{% endif %}">
+                            {{ appointment.get_statut_display }}
+                        </span>
+                    </td>
+                    <td>
+                        <a href="{% url 'appointments:detail' appointment.pk %}" class="btn btn-sm btn-info">
+                            <i class="fas fa-eye"></i>
+                        </a>
+                        {% if appointment.statut == 'PLANIFIE' %}
+                        <a href="{% url 'appointments:update' appointment.pk %}" class="btn btn-sm btn-warning">
+                            <i class="fas fa-edit"></i>
+                        </a>
+                        <a href="{% url 'appointments:delete' appointment.pk %}" class="btn btn-sm btn-danger">
+                            <i class="fas fa-trash"></i>
+                        </a>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="alert alert-info">
+        Vous n'avez aucun rendez-vous pour le moment.
+    </div>
+    {% endif %}
+</div>
+{% endblock %} 
